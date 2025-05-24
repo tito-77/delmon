@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delmon Security System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            direction: var(--dir, ltr);
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff; /* White from Omani flag */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .flag {
+            width: 100px;
+            height: 50px;
+            margin: 0 auto 10px;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #ce1126; /* Red from Omani flag */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #006233; /* Green from Omani flag */
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #ce1126; /* Red from Omani flag */
+            color: #ffffff; /* White from Omani flag */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        button:hover {
+            background-color: #b80f20;
+        }
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav a, .nav select {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #006233; /* Green from Omani flag */
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .dashboard {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .card {
+            background: #ffffff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            border-left: 5px solid #006233; /* Green from Omani flag */
+        }
+        .card h3 {
+            margin: 0 0 10px;
+            color: #ce1126;
+        }
+        .error, .success {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .error { color: #ce1126; }
+        .success { color: #006233; }
+        .hidden {
+            display: none;
+        }
+        .language-select {
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .status-circle {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-circle.green { background-color: #006233; }
+        .status-circle.red { background-color: #ce1126; }
+        .progress-bar {
+            background: #ddd;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar div {
+            background: #006233;
+            height: 100%;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tabs a {
+            padding: 10px;
+            background: #ddd;
+            margin: 0 5px;
+            border-radius: 4px;
+        }
+        .tabs a.active {
+            background: #006233;
+            color: #ffffff;
+        }
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #006233;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <svg class="flag" viewBox="0 0 300 150">
+            <rect x="0" y="0" width="100" height="150" fill="#ce1126"/>
+            <rect x="100" y="0" width="200" height="50" fill="#ffffff"/>
+            <rect x="100" y="50" width="200" height="50" fill="#ce1126"/>
+            <rect x="100" y="100" width="200" height="50" fill="#006233"/>
+            <path d="M30 20 L40 30 L50 20 M40 30 L40 70 M20 50 L60 50" stroke="#ffffff" stroke-width="5" fill="none"/>
+        </svg>
+    </div>
+    <div id="auth-container" class="container">
+        <div id="login-form">
+            <h1 data-en="Secure Login" data-ar="تسجيل دخول آمن">Secure Login</h1>
+            <div id="login-error" class="error hidden"></div>
+            <div class="form-group">
+                <label for="login-username" data-en="Username" data-ar="اسم المستخدم">Username</label>
+                <input type="text" id="login-username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password" data-en="Password" data-ar="كلمة المرور">Password</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button onclick="login()" data-en="Continue to Voice Verification" data-ar="متابعة إلى التحقق الصوتي">Continue to Voice Verification</button>
+            <div class="nav">
+                <a href="#" onclick="alert('Contact support for password reset.')" data-en="Forgot password?" data-ar="نسيت كلمة المرور؟">Forgot password?</a>
+                <a href="#" onclick="showSignup()" data-en="Don't have an account? Sign up" data-ar="ليس لديك حساب؟ اشترك">Don't have an account? Sign up</a>
+            </div>
+            <p data-en="Secure HTTPS connection" data-ar="اتصال HTTPS آمن">Secure HTTPS connection</p>
+        </div>
+        <div id="signup-form" class="hidden">
+            <h1 data-en="Sign Up" data-ar="اشترك">Sign Up</h1>
+            <div id="signup-error" class="error hidden"></div>
+            <div class="form-group">
+                <label for="signup-username" data-en="Username" data-ar="اسم المستخدم">Username</label>
+                <input type="text" id="signup-username" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-password" data-en="Password" data-ar="كلمة المرور">Password</label>
+                <input type="password" id="signup-password" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-role" data-en="Role" data-ar="الدور">Role</label>
+                <select id="signup-role" required>
+                    <option value="user" data-en="User" data-ar="مستخدم">User</option>
+                    <option value="admin" data-en="Admin" data-ar="مدير">Admin</option>
+                </select>
+            </div>
+            <button onclick="signup()" data-en="Sign Up" data-ar="اشترك">Sign Up</button>
+            <div class="nav">
+                <a href="#" onclick="showLogin()" data-en="Already have an account? Login" data-ar="لديك حساب بالفعل؟ تسجيل الدخول">Already have an account? Login</a>
+            </div>
+        </div>
+        <div id="voice-form" class="hidden">
+            <h1 data-en="Voice Verification" data-ar="التحقق الصوتي">Voice Verification</h1>
+            <p data-en="Step 2 of 2" data-ar="الخطوة 2 من 2">Step 2 of 2</p>
+            <div id="voice-error" class="error hidden"></div>
+            <p data-en="Please say the following phrase:" data-ar="من فضلك، قل العبارة التالية:">
+                <strong data-en="My voice is my password for Delmon secure access" data-ar="صوتي هو كلمة المرور الخاصة بي للوصول الآمن إلى دلمون">
+                    My voice is my password for Delmon secure access
+                </strong>
+            </p>
+            <button onclick="simulateVoiceAuth()" data-en="Start Voice Recognition" data-ar="بدء التعرف الصوتي">Start Voice Recognition</button>
+            <p id="voice-status" class="hidden" data-en="Listening... Speak clearly into your microphone" data-ar="جارٍ الاستماع... تحدث بوضوح إلى الميكروفون">
+                Listening... Speak clearly into your microphone
+            </p>
+            <div class="nav">
+                <a href="#" onclick="simulateVoiceAuth()" data-en="Try again" data-ar="حاول مرة أخرى">Try again</a>
+                <a href="#" onclick="alert('Contact support for assistance.')" data-en="Contact support" data-ar="اتصل بالدعم">Contact support</a>
+            </div>
+            <p data-en="Secure voice processing" data-ar="معالجة صوتية آمنة">Secure voice processing</p>
+        </div>
+        <p>&copy; 2025 Delmon International Trading & Contracting</p>
+    </div>
+    <div id="app-container" class="container hidden">
+        <div class="nav">
+            <select id="language-select" class="language-select" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select>
+            <a href="#" onclick="showDashboard()" data-en="Dashboard" data-ar="لوحة التحكم">Dashboard</a>
+            <a href="#" onclick="showUsers()" data-en="Users" data-ar="المستخدمون">Users</a>
+            <a href="#" onclick="showLogs()" data-en="Logs" data-ar="السجلات">Logs</a>
+            <a href="#" onclick="showSettings()" data-en="Settings" data-ar="الإعدادات">Settings</a>
+            <a href="#" onclick="logout()" data-en="Logout" data-ar="تسجيل الخروج">Logout</a>
+        </div>
+        <div id="success-form" class="hidden">
+            <h1 data-en="Authentication Successful" data-ar="التحقق ناجح">Authentication Successful</h1>
+            <p data-en="Your identity has been verified" data-ar="تم التحقق من هويتك">Your identity has been verified</p>
+            <div class="card">
+                <div style="display: flex; align-items: center;">
+                    <div class="avatar" id="user-avatar"></div>
+                    <div>
+                        <h3 id="user-name"></h3>
+                        <p id="user-role"></p>
+                    </div>
+                </div>
+                <p><strong data-en="Last login:" data-ar="آخر تسجيل دخول:"></strong> <span id="last-login"></span></p>
+                <p><strong data-en="Location:" data-ar="الموقع:"></strong> <span id="location">Doha, Qatar</span></p>
+            </div>
+            <button onclick="showDashboard()" data-en="Continue to Dashboard" data-ar="متابعة إلى لوحة التحكم">Continue to Dashboard</button>
+            <button onclick="alert('Account settings not implemented.')" data-en="View Account Settings" data-ar="عرض إعدادات الحساب">View Account Settings</button>
+            <p data-en="Secure session established" data-ar="تم إنشاء جلسة آمنة">Secure session established</p>
+        </div>
+        <div id="dashboard" class="dashboard hidden">
+            <h1 data-en="Admin Dashboard" data-ar="لوحة تحكم المدير">Admin Dashboard</h1>
+            <p data-en="Delmon Security System" data-ar="نظام أمان دلمون">Delmon Security System</p>
+            <div class="card">
+                <h3 data-en="System Status" data-ar="حالة النظام">System Status</h3>
+                <p><span class="status-circle green"></span> <span data-en="Operational" data-ar="يعمل">Operational</span></p>
+                <p><strong data-en="Active Users" data-ar="المستخدمون النشطون"></strong> <span id="active-users">24</span></p>
+                <p><strong data-en="Failed Attempts" data-ar="المحاولات الفاشلة"></strong> <span id="failed-attempts">3</span></p>
+                <p><strong data-en="Locked Accounts" data-ar="الحسابات المقفلة"></strong> <span id="locked-accounts">1</span></p>
+                <p><strong data-en="Voice Match Rate" data-ar="معدل تطابق الصوت"></strong> <span id="voice-match-rate">96%</span></p>
+            </div>
+            <h3 data-en="Quick Actions" data-ar="إجراءات سريعة">Quick Actions</h3>
+            <div class="nav">
+                <a href="#" onclick="showUsers()" data-en="User Management" data-ar="إدارة المستخدمين">User Management</a>
+                <a href="#" onclick="alert('Reset passwords not implemented.')" data-en="Reset Passwords" data-ar="إعادة تعيين كلمات المرور">Reset Passwords</a>
+                <a href="#" onclick="showLogs()" data-en="Login History" data-ar="سجل تسجيل الدخول">Login History</a>
+                <a href="#" onclick="showSettings()" data-en="System Settings" data-ar="إعدادات النظام">System Settings</a>
+            </div>
+            <h3 data-en="Recent Activity" data-ar="النشاط الأخير">Recent Activity</h3>
+            <div id="recent-activity"></div>
+            <a href="#" onclick="showLogs()" data-en="View All Activity" data-ar="عرض كل النشاط">View All Activity</a>
+            <h3 data-en="System Health" data-ar="صحة النظام">System Health</h3>
+            <div class="card">
+                <p><strong data-en="Database" data-ar="قاعدة البيانات"></strong> 98% <div class="progress-bar"><div style="width: 98%;"></div></p>
+                <p><strong data-en="Voice Recognition" data-ar="التعرف الصوتي"></strong> 95% <div class="progress-bar"><div style="width: 95%;"></div></p>
+                <p><strong data-en="Server Load" data-ar="حمل الخادم"></strong> 42% <div class="progress-bar"><div style="width: 42%;"></div></p>
+                <p><strong data-en="Storage" data-ar="التخزين"></strong> 76% <div class="progress-bar"><div style="width: 76%;"></div></p>
+            </div>
+        </div>
+        <div id="users" class="dashboard hidden">
+            <h1 data-en="User Management" data-ar="إدارة المستخدمين">User Management</h1>
+            <p data-en="Manage user accounts and permissions" data-ar="إدارة حسابات المستخدمين والأذونات">Manage user accounts and permissions</p>
+            <div class="tabs">
+                <a href="#" onclick="filterUsers('all')" class="active" data-en="All Users" data-ar="جميع المستخدمين">All Users (24)</a>
+                <a href="#" onclick="filterUsers('active')" data-en="Active" data-ar="نشط">Active</a>
+                <a href="#" onclick="filterUsers('locked')" data-en="Locked" data-ar="مقفل">Locked</a>
+                <a href="#" onclick="filterUsers('admins')" data-en="Admins" data-ar="المدراء">Admins</a>
+            </div>
+            <div id="user-list"></div>
+            <a href="#" onclick="alert('Add new user not implemented.')" data-en="Add New User" data-ar="إضافة مستخدم جديد">Add New User</a>
+        </div>
+        <div id="logs" class="dashboard hidden">
+            <h1 data-en="Login History" data-ar="سجل تسجيل الدخول">Login History</h1>
+            <p data-en="View all authentication attempts" data-ar="عرض جميع محاولات التحقق">View all authentication attempts</p>
+            <div class="tabs">
+                <a href="#" onclick="filterLogs('all')" class="active" data-en="All Attempts" data-ar="جميع المحاولات">All Attempts</a>
+                <a href="#" onclick="filterLogs('successful')" data-en="Successful" data-ar="ناجحة">Successful</a>
+                <a href="#" onclick="filterLogs('failed')" data-en="Failed" data-ar="فاشلة">Failed</a>
+                <a href="#" onclick="filterLogs('locked')" data-en="Locked Accounts" data-ar="الحسابات المقفلة">Locked Accounts</a>
+            </div>
+            <div id="log-list"></div>
+            <a href="#" onclick="alert('Load more not implemented.')" data-en="Load More" data-ar="تحميل المزيد">Load More</a>
+            <div class="nav">
+                <a href="#" onclick="alert('Export CSV not implemented.')" data-en="Export CSV" data-ar="تصدير CSV">Export CSV</a>
+            </div>
+        </div>
+        <div id="settings" class="dashboard hidden">
+            <h1 data-en="System Settings" data-ar="إعدادات النظام">System Settings</h1>
+            <p data-en="Configure security and authentication settings" data-ar="تكوين إعدادات الأمان والتحقق">Configure security and authentication settings</p>
+            <div class="card">
+                <h3 data-en="Authentication Settings" data-ar="إعدادات التحقق">Authentication Settings</h3>
+                <div class="form-group">
+                    <label for="voice-threshold" data-en="Voice Match Threshold" data-ar="عتبة تطابق الصوت">Voice Match Threshold</label>
+                    <input type="range" id="voice-threshold" min="80" max="100" value="95">
+                    <p><span id="voice-threshold-value">95%</span> <span data-en="Minimum confidence level required" data-ar="الحد الأدنى لمستوى الثقة المطلوب"></span></p>
+                </div>
+                <div class="form-group">
+                    <label for="max-attempts" data-en="Max Failed Attempts" data-ar="الحد الأقصى للمحاولات الفاشلة">Max Failed Attempts</label>
+                    <select id="max-attempts">
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="session-timeout" data-en="Session Timeout" data-ar="مهلة الجلسة">Session Timeout</label>
+                    <select id="session-timeout">
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="120">2 hours</option>
+                        <option value="240">4 hours</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="two-step" data-en="Two-Step Verification" data-ar="التحقق بخطوتين">Two-Step Verification</label>
+                    <input type="checkbox" id="two-step" checked>
+                </div>
+            </div>
+            <button onclick="alert('Save settings not implemented.')" data-en="Save Settings" data-ar="حفظ الإعدادات">Save Settings</button>
+        </div>
+    </div>
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                'login-error': 'Invalid username or password!',
+                'signup-error': 'Username already taken!',
+                'voice-error': 'Voice verification failed! Please try again.',
+                'voice-success': 'Voice verification successful!',
+                'report-success': 'Hazard reported successfully!'
+            },
+            ar: {
+                'login-error': 'اسم المستخدم أو كلمة المرور غير صالحة!',
+                'signup-error': 'اسم المستخدم مستخدم بالفعل!',
+                'voice-error': 'فشل التحقق الصوتي! حاول مرة أخرى.',
+                'voice-success': 'تم التحقق الصوتي بنجاح!',
+                'report-success': 'تم الإبلاغ عن الخطر بنجاح!'
+            }
+        };
+
+        // Sample user and log data
+        const initialUsers = [
+            { username: 'omar', password: 'pass123', role: 'admin', name: 'Omar Bader AL Siyami', title: 'Project Manager', voiceEnrolled: true, failedAttempts: 0, locked: false },
+            { username: 'khalid', password: 'pass123', role: 'user', name: 'Khalid Al-Thani', title: 'Project Manager', voiceEnrolled: true, failedAttempts: 0, locked: false },
+            { username: 'mohammed', password: 'pass123', role: 'user', name: 'Mohammed Al-Sulaiti', title: 'Site Engineer', voiceEnrolled: true, failedAttempts: 3, locked: true },
+            { username: 'fatima', password: 'pass123', role: 'user', name: 'Fatima Hassan', title: 'Financial Analyst', voiceEnrolled: false, failedAttempts: 1, locked: false },
+            { username: 'sara', password: 'pass123', role: 'admin', name: 'Sara Al-Mahmoud', title: 'HR Manager', voiceEnrolled: true, failedAttempts: 0, locked: false }
+        ];
+
+        const initialLogs = [
+            { username: 'khalid', time: '10:45 AM', status: 'successful', voiceMatch: '98%', location: 'Doha, Qatar', device: 'Chrome on Android', date: 'Today' },
+            { username: 'fatima', time: '10:25 AM', status: 'failed', voiceMatch: '82%', location: 'Doha, Qatar', device: 'Safari on iOS', date: 'Today' },
+            { username: 'mohammed', time: '09:50 AM', status: 'locked', voiceMatch: '3 failed attempts', location: 'Doha, Qatar', device: 'Chrome on Windows', date: 'Today' },
+            { username: 'ahmed', time: '4:15 PM', status: 'successful', voiceMatch: '97%', location: 'Doha, Qatar', device: 'Firefox on Windows', date: 'Yesterday' },
+            { username: 'sara', time: '2:30 PM', status: 'successful', voiceMatch: '96%', location: 'Doha, Qatar', device: 'Chrome on Android', date: 'Yesterday' }
+        ];
+
+        // Initialize local storage
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify(initialUsers));
+        }
+        if (!localStorage.getItem('logs')) {
+            localStorage.setItem('logs', JSON.stringify(initialLogs));
+        }
+        if (!localStorage.getItem('currentUser')) {
+            localStorage.setItem('currentUser', '');
+        }
+        if (!localStorage.getItem('language')) {
+            localStorage.setItem('language', 'en');
+        }
+
+        // Set initial language
+        document.getElementById('language-select').value = localStorage.getItem('language');
+        changeLanguage();
+
+        function changeLanguage() {
+            const lang = document.getElementById('language-select').value;
+            localStorage.setItem('language', lang);
+            document.documentElement.style.setProperty('--dir', lang === 'ar' ? 'rtl' : 'ltr');
+            document.querySelectorAll('[data-en][data-ar]').forEach(element => {
+                element.textContent = element.getAttribute(`data-${lang}`);
+            });
+            document.querySelectorAll('#signup-role option').forEach(option => {
+                option.textContent = option.getAttribute(`data-${lang}`);
+            });
+            if (!document.getElementById('dashboard').classList.contains('hidden')) {
+                showDashboard();
+            } else if (!document.getElementById('users').classList.contains('hidden')) {
+                showUsers();
+            } else if (!document.getElementById('logs').classList.contains('hidden')) {
+                showLogs();
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('voice-form').classList.add('hidden');
+            document.getElementById('success-form').classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            clearErrors();
+        }
+
+        function showSignup() {
+            document.getElementById('signup-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('voice-form').classList.add('hidden');
+            document.getElementById('success-form').classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            clearErrors();
+        }
+
+        function showVoiceAuth() {
+            document.getElementById('voice-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('success-form').classList.add('hidden');
+            clearErrors();
+        }
+
+        function showSuccess() {
+            const user = JSON.parse(localStorage.getItem('users')).find(u => u.username === localStorage.getItem('currentUser'));
+            document.getElementById('user-avatar').textContent = user.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-role').textContent = user.title;
+            document.getElementById('last-login').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('success-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('voice-form').classList.add('hidden');
+            clearErrors();
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('users').classList.add('hidden');
+            document.getElementById('logs').classList.add('hidden');
+            document.getElementById('settings').classList.add('hidden');
+            const users = JSON.parse(localStorage.getItem('users'));
+            const logs = JSON.parse(localStorage.getItem('logs'));
+            document.getElementById('active-users').textContent = users.filter(u => !u.locked).length;
+            document.getElementById('failed-attempts').textContent = logs.filter(l => l.status === 'failed').length;
+            document.getElementById('locked-accounts').textContent = users.filter(u => u.locked).length;
+            document.getElementById('voice-match-rate').textContent = '96%';
+            const recentActivity = document.getElementById('recent-activity');
+            recentActivity.innerHTML = '';
+            logs.slice(0, 4).forEach(log => {
+                const user = users.find(u => u.username === log.username);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <p>${log.status === 'successful' ? '<span class="status-circle green"></span>' : '<span class="status-circle red"></span>'}
+                    <span data-en="Successful login - ${user.name}" data-ar="تسجيل دخول ناجح - ${user.name}">${log.status === 'successful' ? `Successful login - ${user.name}` : `Failed ${log.status} - ${user.name}`}</span>
+                    <br>${log.time}</p>
+                `;
+                recentActivity.appendChild(card);
+            });
+            changeLanguage();
+        }
+
+        function showUsers(filter = 'all') {
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('users').classList.remove('hidden');
+            document.getElementById('logs').classList.add('hidden');
+            document.getElementById('settings').classList.add('hidden');
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
+            const users = JSON.parse(localStorage.getItem('users')).filter(u => {
+                if (filter === 'active') return !u.locked;
+                if (filter === 'locked') return u.locked;
+                if (filter === 'admins') return u.role === 'admin';
+                return true;
+            });
+            document.querySelectorAll('.tabs a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.tabs a[onclick="filterUsers('${filter}')"]`).classList.add('active');
+            users.forEach(user => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="avatar">${user.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div>
+                            <h3>${user.name}</h3>
+                            <p>${user.title}</p>
+                        </div>
+                    </div>
+                    <p><span class="${user.locked ? 'status-circle red' : 'status-circle green'}"></span>
+                    <span data-en="${user.locked ? 'Locked' : 'Active'}" data-ar="${user.locked ? 'مقفل' : 'نشط'}">${user.locked ? 'Locked' : 'Active'}</span></p>
+                    <p data-en="${user.role === 'admin' ? 'Admin' : 'User'}, ${user.voiceEnrolled ? 'Voice Enrolled' : 'Voice Pending'}" 
+                       data-ar="${user.role === 'admin' ? 'مدير' : 'مستخدم'}, ${user.voiceEnrolled ? 'الصوت مسجل' : 'الصوت معلق'}">
+                       ${user.role === 'admin' ? 'Admin' : 'User'}, ${user.voiceEnrolled ? 'Voice Enrolled' : 'Voice Pending'}</p>
+                    <button onclick="manageUser('${user.username}', ${user.locked})" 
+                            data-en="${user.locked ? 'Unlock' : 'Manage'}" 
+                            data-ar="${user.locked ? 'فتح' : 'إدارة'}">${user.locked ? 'Unlock' : 'Manage'}</button>
+                `;
+                userList.appendChild(card);
+            });
+            changeLanguage();
+        }
+
+        function showLogs(filter = 'all') {
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('users').classList.add('hidden');
+            document.getElementById('logs').classList.remove('hidden');
+            document.getElementById('settings').classList.add('hidden');
+            const logList = document.getElementById('log-list');
+            logList.innerHTML = '';
+            const users = JSON.parse(localStorage.getItem('users'));
+            const logs = JSON.parse(localStorage.getItem('logs')).filter(l => {
+                if (filter === 'successful') return l.status === 'successful';
+                if (filter === 'failed') return l.status === 'failed';
+                if (filter === 'locked') return l.status === 'locked';
+                return true;
+            });
+            document.querySelectorAll('.tabs a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.tabs a[onclick="filterLogs('${filter}')"]`).classList.add('active');
+            let currentDate = '';
+            logs.forEach(log => {
+                if (log.date !== currentDate) {
+                    currentDate = log.date;
+                    const dateHeader = document.createElement('h3');
+                    dateHeader.textContent = log.date;
+                    dateHeader.setAttribute('data-en', log.date);
+                    dateHeader.setAttribute('data-ar', log.date === 'Today' ? 'اليوم' : 'الأمس');
+                    logList.appendChild(dateHeader);
+                }
+                const user = users.find(u => u.username === log.username);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="avatar">${user.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div>
+                            <h3>${user.name}</h3>
+                            <p>${user.title}</p>
+                        </div>
+                    </div>
+                    <p>${log.time}</p>
+                    <p><span class="${log.status === 'successful' ? 'status-circle green' : 'status-circle red'}"></span>
+                    <span data-en="${log.status.charAt(0).toUpperCase() + log.status.slice(1)}" 
+                          data-ar="${log.status === 'successful' ? 'ناجحة' : log.status === 'failed' ? 'فاشلة' : 'مقفل'}">
+                          ${log.status.charAt(0).toUpperCase() + log.status.slice(1)}</span>
+                    <br>${log.voiceMatch}<br>${log.location}<br>${log.device}</p>
+                    ${log.status === 'locked' ? `<button onclick="manageUser('${log.username}', true)" data-en="Unlock Account" data-ar="فتح الحساب">Unlock Account</button>` : ''}
+                `;
+                logList.appendChild(card);
+            });
+            changeLanguage();
+        }
+
+        function showSettings() {
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('users').classList.add('hidden');
+            document.getElementById('logs').classList.add('hidden');
+            document.getElementById('settings').classList.remove('hidden');
+            document.getElementById('voice-threshold').addEventListener('input', () => {
+                document.getElementById('voice-threshold-value').textContent = `${document.getElementById('voice-threshold').value}%`;
+            });
+            changeLanguage();
+        }
+
+        function clearErrors() {
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('signup-error').classList.add('hidden');
+            document.getElementById('voice-error').classList.add('hidden');
+        }
+
+        function signup() {
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
+            const role = document.getElementById('signup-role').value;
+            const users = JSON.parse(localStorage.getItem('users'));
+            const errorDiv = document.getElementById('signup-error');
+            const lang = localStorage.getItem('language');
+
+            if (users.find(user => user.username === username)) {
+                errorDiv.textContent = translations[lang]['signup-error'];
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            users.push({
+                username,
+                password,
+                role,
+                name: username,
+                title: role === 'admin' ? 'Admin' : 'User',
+                voiceEnrolled: false,
+                failedAttempts: 0,
+                locked: false
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', username);
+            document.getElementById('signup-username').value = '';
+            document.getElementById('signup-password').value = '';
+            document.getElementById('signup-role').value = 'user';
+            showVoiceAuth();
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const users = JSON.parse(localStorage.getItem('users'));
+            const errorDiv = document.getElementById('login-error');
+            const lang = localStorage.getItem('language');
+
+            const user = users.find(user => user.username === username && user.password === password);
+            if (!user || user.locked) {
+                errorDiv.textContent = user && user.locked ? translations[lang]['voice-error'].replace('failed', 'locked') : translations[lang]['login-error'];
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            localStorage.setItem('currentUser', username);
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            showVoiceAuth();
+        }
+
+        function simulateVoiceAuth() {
+            const lang = localStorage.getItem('language');
+            const errorDiv = document.getElementById('voice-error');
+            const statusDiv = document.getElementById('voice-status');
+            statusDiv.classList.remove('hidden');
+            setTimeout(() => {
+                const users = JSON.parse(localStorage.getItem('users'));
+                const currentUser = localStorage.getItem('currentUser');
+                const user = users.find(u => u.username === currentUser);
+                const logs = JSON.parse(localStorage.getItem('logs'));
+                const voiceMatch = user.voiceEnrolled ? Math.random() * 20 + 80 : 50; // Simulate 80-100% if enrolled, else fail
+                if (voiceMatch >= 95) {
+                    user.failedAttempts = 0;
+                    logs.push({
+                        username: currentUser,
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        status: 'successful',
+                        voiceMatch: `${Math.round(voiceMatch)}% match`,
+                        location: 'Doha, Qatar',
+                        device: navigator.userAgent.includes('Chrome') ? 'Chrome on Windows' : 'Unknown',
+                        date: 'Today'
+                    });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    localStorage.setItem('logs', JSON.stringify(logs));
+                    statusDiv.classList.add('hidden');
+                    alert(translations[lang]['voice-success']);
+                    showSuccess();
+                } else {
+                    user.failedAttempts += 1;
+                    if (user.failedAttempts >= 3) {
+                        user.locked = true;
+                        logs.push({
+                            username: currentUser,
+                            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            status: 'locked',
+                            voiceMatch: '3 failed attempts',
+                            location: 'Doha, Qatar',
+                            device: navigator.userAgent.includes('Chrome') ? 'Chrome on Windows' : 'Unknown',
+                            date: 'Today'
+                        });
+                    } else {
+                        logs.push({
+                            username: currentUser,
+                            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            status: 'failed',
+                            voiceMatch: `${Math.round(voiceMatch)}% match`,
+                            location: 'Doha, Qatar',
+                            device: navigator.userAgent.includes('Chrome') ? 'Chrome on Windows' : 'Unknown',
+                            date: 'Today'
+                        });
+                    }
+                    localStorage.setItem('users', JSON.stringify(users));
+                    localStorage.setItem('logs', JSON.stringify(logs));
+                    errorDiv.textContent = translations[lang]['voice-error'];
+                    errorDiv.classList.remove('hidden');
+                    statusDiv.classList.add('hidden');
+                }
+            }, 2000);
+        }
+
+        function manageUser(username, locked) {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.username === username);
+            if (locked) {
+                user.locked = false;
+                user.failedAttempts = 0;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Account unlocked!');
+                showUsers();
+            } else {
+                alert('Manage user not implemented.');
+            }
+        }
+
+        function filterUsers(filter) {
+            showUsers(filter);
+        }
+
+        function filterLogs(filter) {
+            showLogs(filter);
+        }
+
+        function logout() {
+            localStorage.setItem('currentUser', '');
+            showLogin();
+        }
+
+        // Check if user is already logged in
+        if (localStorage.getItem('currentUser')) {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.username === localStorage.getItem('currentUser'));
+            if (user && user.voiceEnrolled) {
+                showSuccess();
+            } else {
+                showVoiceAuth();
+            }
+        }
+    </script>
+</body>
+</html>

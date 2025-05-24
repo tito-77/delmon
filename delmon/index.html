@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delmon Security System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            width: 50px;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .secure-note {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .secure-note img {
+            width: 16px;
+            margin-right: 5px;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .voice-section {
+            text-align: center;
+        }
+        .voice-section p {
+            font-size: 16px;
+            color: #333;
+            margin: 20px 0;
+        }
+        .success-section {
+            text-align: center;
+        }
+        .success-section img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+        .success-section input[type="file"] {
+            margin: 10px auto;
+            display: block;
+        }
+        .success-message {
+            color: #28a745;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .dashboard {
+            max-width: 600px;
+        }
+        .dashboard .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .dashboard .stat-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .dashboard .stat-box h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .dashboard .stat-box p {
+            margin: 5px 0 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .dashboard .activity {
+            margin-top: 20px;
+        }
+        .dashboard .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .dashboard .activity-item img {
+            width: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .navigation a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .navigation a:hover {
+            text-decoration: underline;
+        }
+        #voiceAnimation {
+            width: 100px;
+            height: 50px;
+            margin: 20px auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="container">
+        <div class="header">
+            <img src="image.jpg" alt="Delmon Logo">
+            <h1>Secure Login</h1>
+            <p>Step 1: Password Authentication</p>
+        </div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter Nine-character password">
+        </div>
+        <button class="btn" onclick="handleLogin()">Continue to Voice Verification</button>
+        <a href="#" class="link">Forgot password?</a>
+        <a href="#" class="link">Don't have an account? Sign up</a>
+        <div class="secure-note">
+            <img src="image.jpg" alt="Delmon Logo">
+            Secure HTTPS connection
+        </div>
+        <div class="footer">
+            © 2025 Delmon International Trading & Contracting
+        </div>
+    </div>
+
+    <div id="voiceScreen" class="container" style="display: none;">
+        <div class="header">
+            <img src="image.jpg" alt="Delmon Logo">
+            <h1>Voice Verification</h1>
+            <p>Step 2 of 2</p>
+        </div>
+        <div class="voice-section">
+            <p>Please say the following phrase:</p>
+            <p>"My voice is my password for Delmon secure access"</p>
+            <canvas id="voiceAnimation"></canvas>
+            <p id="voiceStatus">Listening... Speak clearly into your microphone</p>
+            <button class="btn" onclick="simulateVoiceVerification()">Verify Voice</button>
+            <a href="#" class="link" onclick="simulateVoiceVerification()">Having trouble? Try again or contact support</a>
+        </div>
+        <div class="secure-note">
+            <img src="image.jpg" alt="Delmon Logo">
+            Secure voice processing
+        </div>
+        <div class="footer">
+            © 2025 Delmon International Trading & Contracting
+        </div>
+    </div>
+
+    <div id="successScreen" class="container" style="display: none;">
+        <div class="header">
+            <h1>Authentication Successful</h1>
+            <p>Your identity has been verified</p>
+        </div>
+        <div class="success-section">
+            <p id="successMessage" class="success-message"></p>
+            <img id="profilePicture" src="https://via.placeholder.com/80" alt="User">
+            <input type="file" id="profileUpload" accept="image/*" onchange="handleProfileUpload()">
+            <h2>Omar Bader AL Siyami</h2>
+            <p>Project Manager</p>
+            <p>Last login: Today, 09:45 AM</p>
+            <p>Location: Doha, Qatar</p>
+            <button class="btn" onclick="showScreen('dashboardScreen')">Continue to Dashboard</button>
+            <a href="#" class="link">View Account Settings</a>
+        </div>
+        <div class="secure-note">
+            <img src="image.jpg" alt="Delmon Logo">
+            Secure session established
+        </div>
+        <div class="footer">
+            © 2025 Delmon International Trading & Contracting
+        </div>
+    </div>
+
+    <div id="dashboardScreen" class="container dashboard" style="display: none;">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <p>Delmon Security System</p>
+        </div>
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Active Users</h3>
+                <p>24</p>
+            </div>
+            <div class="stat-box">
+                <h3>Failed Attempts</h3>
+                <p>3</p>
+            </div>
+            <div class="stat-box">
+                <h3>Locked Accounts</h3>
+                <p>1</p>
+            </div>
+            <div class="stat-box">
+                <h3>Voice Match Rate</h3>
+                <p>96%</p>
+            </div>
+        </div>
+        <h3>Recent Activity</h3>
+        <div class="activity" id="activityList">
+            <!-- Activity items will be populated by JavaScript -->
+        </div>
+        <a href="#" class="link">View All Activity</a>
+        <div class="navigation">
+            <a href="#" onclick="showScreen('dashboardScreen')">Dashboard</a>
+            <a href="#" onclick="showScreen('usersScreen')">Users</a>
+            <a href="#" onclick="showScreen('logsScreen')">Logs</a>
+            <a href="#" onclick="showScreen('settingsScreen')">Settings</a>
+        </div>
+        <div class="footer">
+            © 2025 Delmon International Trading & Contracting
+        </div>
+    </div>
+
+    <div id="usersScreen" class="container dashboard" style="display: none;">
+        <div class="header">
+            <h1>User Management</h1>
+            <p>Manage user accounts and permissions</p>
+        </div>
+        <div class="activity" id="userList">
+            <!-- User items will be populated by JavaScript -->
+        </div>
+        <a href="#" class="link">Load More</a>
+        <button class="btn">Add New User</button>
+        <div class="navigation">
+            <a href="#" onclick="showScreen('dashboardScreen')">Dashboard</a>
+            <a href="#" onclick="showScreen('usersScreen')">Users</a>
+            <a href="#" onclick="showScreen('logsScreen')">Logs</a>
+            <a href="#" onclick="showScreen('settingsScreen')">Settings</a>
+        </div>
+        <div class="footer">
+            © 2025 Delmon International Trading & Contracting
+        </div>
+    </div>
+
+    <div id="logsScreen" class="container dashboard" style="display: none;">
+        <div class="header">
+            <h1>Login History</h1>
+            <p>View all authentication attempts</p>
+        </div>
+        <div class="activity" id="logList">
+            <!-- Log items will be populated by JavaScript -->
+        </div>
+        <a href="#" class="link">Load More</a>
+        <button class="btn">Export CSV</button>
+        <div class="navigation">
+            <a href="#" onclick="showScreen('dashboardScreen')">Dashboard</a>
+            <a href="#" onclick="showScreen('usersScreen')">Users</a>
+            <a href="#" onclick="showScreen('logsScreen')">Logs</a>
+            <a href="#" onclick="showScreen('settingsScreen')">Settings</a>
+        </div>
+        <div class="footer">
+            © 2025 Delmon International Trading & Contracting
+        </div>
+    </div>
+
+    <div id="settingsScreen" class="container dashboard" style="display: none;">
+        <div class="header">
+            <h1>System Settings</h1>
+            <p>Configure security and authentication settings</p>
+        </div>
+        <div class="form-group">
+            <label>Voice Match Threshold</label>
+            <input type="range" min="80" max="100" value="95">
+            <p>95%</p>
+        </div>
+        <div class="form-group">
+            <label>Max Failed Attempts</label>
+            <input type="number" value="3" min="1" max="5">
+        </div>
+        <div class="form-group">
+            <label>Session Timeout</label>
+            <select>
+                <option>15 minutes</option>
+                <option>30 minutes</option>
+                <option>1 hour</option>
+                <option>2 hours</option>
+                <option>4 hours</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Two-Step Verification</label>
+            <input type="checkbox" checked> Require both password and voice
+        </div>
+        <button class="btn">Save Settings</button>
+        <div class="navigation">
+            <a href="#" onclick="showScreen('dashboardScreen')">Dashboard</a>
+            <a href="#" onclick="showScreen('usersScreen')">Users</a>
+            <a href="#" onclick="showScreen('logsScreen')">Logs</a>
+            <a href="#" onclick="showScreen('settingsScreen')">Settings</a>
+        </div>
+        <div class="footer">
+            © 2025 Delmon International Trading & Contracting
+        </div>
+    </div>
+
+    <script>
+        // Simulated user data in local storage
+        const users = [
+            { id: 1, name: 'george', role: 'Project Manager', status: 'Active', initials: 'AM', voice: 'Enrolled' },
+            { id: 2, name: 'george', role: 'Project Manager', status: 'Active', initials: 'KA', voice: 'Enrolled' },
+            { id: 3, name: 'mike', role: 'Site Engineer', status: 'Locked', initials: 'MS', voice: '3 Failed Attempts' },
+            { id: 4, name: 'mark', role: 'Financial Analyst', status: 'Active', initials: 'FH', voice: 'Pending' },
+            { id: 5, name: 'sarah', role: 'HR Manager', status: 'Active', initials: 'SA', voice: 'Enrolled' }
+        ];
+
+        const logs = [
+            { id: 1, name: 'gorge', role: 'Project Manager', time: '10:45 AM', status: 'Successful', details: 'Voice: 98% match', location: 'Doha, Qatar', device: 'Chrome on Android' },
+            { id: 2, name: 'mark', role: 'Financial Analyst', time: '10:25 AM', status: 'Failed', details: 'Voice: 82% match', location: 'Doha, Qatar', device: 'Safari on iOS' },
+            { id: 3, name: 'anthony', role: 'Site Engineer', time: '09:50 AM', status: 'Account Locked', details: '3 failed attempts', location: 'Doha, Qatar', device: 'Chrome unsettus on Windows' },
+            { id: 4, name: 'george', role: 'Project Manager', time: '4:15 PM', status: 'Successful', details: 'Voice: 97% match', location: 'Doha, Qatar', device: 'Firefox on Windows' },
+            { id: 5, name: 'sarah', role: 'HR Manager', time: '2:30 PM', status: 'Successful', details: 'Voice: 96% match', location: 'Doha, Qatar', device: 'Chrome on Android' }
+        ];
+
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('logs', JSON.stringify(logs));
+
+        let currentUsername = '';
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.container').forEach(screen => screen.style.display = 'none');
+            document.getElementById(screenId).style.display = 'block';
+            if (screenId === 'dashboardScreen') populateActivity();
+            if (screenId === 'usersScreen') populateUsers();
+            if (screenId === 'logsScreen') populateLogs();
+            if (screenId === 'successScreen') {
+                document.getElementById('successMessage').textContent = `You have successfully logged in as ${currentUsername}`;
+                const savedImage = localStorage.getItem('profilePicture');
+                if (savedImage) {
+                    document.getElementById('profilePicture').src = savedImage;
+                }
+            }
+            if (screenId !== 'voiceScreen' && audioContext) {
+                microphone.getTracks().forEach(track => track.stop());
+                audioContext.close();
+                audioContext = null;
+                analyser = null;
+                microphone = null;
+            }
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username && password) {
+                currentUsername = username;
+                localStorage.setItem('currentUsername', username);
+                showScreen('voiceScreen');
+                startVoiceAnimation();
+            } else {
+                alert('Please enter username and password');
+            }
+        }
+
+        function startVoiceAnimation() {
+            const canvas = document.getElementById('voiceAnimation');
+            const voiceStatus = document.getElementById('voiceStatus');
+            canvas.style.display = 'block';
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            // Fallback animation if no microphone
+            function drawFallbackWave() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height / 2);
+                const time = Date.now() / 100;
+                for (let i = 0; i < canvas.width; i++) {
+                    const y = Math.sin(i * 0.05 + time) * 20 + canvas.height / 2;
+                    ctx.lineTo(i, y);
+                }
+                ctx.strokeStyle = '#007bff';
+                ctx.stroke();
+                if (canvas.style.display === 'block') {
+                    animationFrameId = requestAnimationFrame(drawFallbackWave);
+                }
+            }
+
+            // Request microphone access
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 2048;
+                    microphone = stream;
+                    const source = audioContext.createMediaStreamSource(stream);
+                    source.connect(analyser);
+
+                    const bufferLength = analyser.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+
+                    function drawWave() {
+                        analyser.getByteTimeDomainData(dataArray);
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.beginPath();
+                        ctx.moveTo(0, canvas.height / 2);
+
+                        // Calculate RMS for volume
+                        let sum = 0;
+                        for (let i = 0; i < bufferLength; i++) {
+                            const value = (dataArray[i] / 128) - 1;
+                            sum += value * value;
+                        }
+                        const rms = Math.sqrt(sum / bufferLength) * 50; // Scale for visibility
+
+                        for (let i = 0; i < canvas.width; i++) {
+                            const index = Math.floor(i / canvas.width * bufferLength);
+                            const value = (dataArray[i] / 128) - 1;
+                            const y = canvas.height / 2 + value * rms;
+                            ctx.lineTo(i, y);
+                        }
+
+                        ctx.strokeStyle = '#007bff';
+                        ctx.stroke();
+
+                        if (canvas.style.display === 'block') {
+                            animationFrameId = requestAnimationFrame(drawWave);
+                        }
+                    }
+
+                    voiceStatus.textContent = 'Listening... Speak clearly into your microphone';
+                    drawWave();
+                })
+                .catch(err => {
+                    console.error('Microphone access error:', err);
+                    voiceStatus.textContent = 'Microphone access denied. Using fallback animation.';
+                    drawFallbackWave();
+                });
+
+            // Cleanup on screen change
+            canvas.addEventListener('animationend', () => {
+                cancelAnimationFrame(animationFrameId);
+            });
+        }
+
+        function simulateVoiceVerification() {
+            const canvas = document.getElementById('voiceAnimation');
+            const voiceStatus = document.getElementById('voiceStatus');
+            canvas.style.display = 'none';
+            voiceStatus.textContent = 'Processing...';
+            if (audioContext && microphone) {
+                microphone.getTracks().forEach(track => track.stop());
+                audioContext.close();
+                audioContext = null;
+                analyser = null;
+                microphone = null;
+            }
+            setTimeout(() => {
+                showScreen('successScreen');
+            }, 2000);
+        }
+
+        function handleProfileUpload() {
+            const fileInput = document.getElementById('profileUpload');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    localStorage.setItem('profilePicture', imageData);
+                    document.getElementById('profilePicture').src = imageData;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function populateActivity() {
+            const activityList = document.getElementById('activityList');
+            activityList.innerHTML = '';
+            const recentLogs = logs.slice(0, 3);
+            recentLogs.forEach(log => {
+                const div = document.createElement('div');
+                div.className = 'activity-item';
+                div.innerHTML = `
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <div>
+                        <p><strong>${log.name}</strong> - ${log.status}</p>
+                        <p>${log.time}</p>
+                    </div>
+                `;
+                activityList.appendChild(div);
+            });
+        }
+
+        function populateUsers() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'activity-item';
+                div.innerHTML = `
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #007bff; color: white; display: flex; align-items: center; justify-content: center; margin-right: 10px;">${user.initials}</div>
+                    <div>
+                        <p><strong>${user.name}</strong></p>
+                        <p>${user.role}</p>
+                        <p>${user.status} - ${user.voice}</p>
+                    </div>
+                    <button class="btn" style="margin-left: auto; padding: 5px 10px;">${user.status === 'Locked' ? 'Unlock' : 'Manage'}</button>
+                `;
+                userList.appendChild(div);
+            });
+        }
+
+        function populateLogs() {
+            const logList = document.getElementById('logList');
+            logList.innerHTML = '';
+            logs.forEach(log => {
+                const div = document.createElement('div');
+                div.className = 'activity-item';
+                div.innerHTML = `
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <div>
+                        <p><strong>${log.name}</strong> - ${log.role}</p>
+                        <p>${log.time}</p>
+                        <p>${log.status} - ${log.details}</p>
+                        <p>${log.location} - ${log.device}</p>
+                    </div>
+                    ${log.status === 'Account Locked' ? '<button class="btn" style="margin-left: auto; padding: 5px 10px;">Unlock Account</button>' : ''}
+                `;
+                logList.appendChild(div);
+            });
+        }
+
+        // Initialize
+        const savedUsername = localStorage.getItem('currentUsername');
+        if (savedUsername) {
+            currentUsername = savedUsername;
+        }
+        showScreen('loginScreen');
+    </script>
+</body>
+</html>
